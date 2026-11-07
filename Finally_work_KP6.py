@@ -5,78 +5,52 @@ import requests
 
 
 
-def update_currency_label(event):
-    code = target_combobox.get()
-    name = currencies[code]
-    target_label.config(text=name)
-
-
 def update_base_label(event):
     code = base_combobox.get()
-    name = currencies[code]
+    name = currencies[code][0]
     base_label.config(text=name)
 
 
-def update_base2_label(event):
-    code = base_combobox.get()
-    name = currencies[code]
-    base2_label.config(text=name)
-
-
 def exchange():
-    target_code = target_combobox.get().strip()
     base_code = base_combobox.get().strip()
-    base2_code = base2_combobox.get().strip()
 
-    if base_code == base2_code:
-        mb.showwarning('Внимание', 'Базовые валюты должны различаться!')
-        return
+    name, coin_id = currencies[base_code]
 
-    if target_code in (base_code, base2_code):
-        mb.showwarning('Внимание', 'Целевая валюта дожна отличаться от базовых!')
-        return
+    try:
+        url = 'https://api.coingecko.com/api/v3/simple/price'
+        params = {
+            'ids': coin_id,
+            'vs_currencies': 'usd',
+        }
 
-    if target_code and base_code and base2_code:
-        try:
-            response = requests.get(f'https://open.er-api.com/v6/latest/{base_code}')
-            response.raise_for_status()
-            data = response.json()
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
 
-            response2 = requests.get(f'https://open.er-api.com/v6/latest/{base2_code}')
-            response2.raise_for_status()
-            data2 = response2.json()
+        info = data[coin_id]
+        price = info['usd']
 
-            if target_code in data['rates'] and target_code in data2['rates']:
-                exchange_rate = data['rates'][target_code]
-                exchange_rate2 = data2['rates'][target_code]
-                base = currencies[base_code]
-                base2 = currencies[base2_code]
-                target = currencies[target_code]
-                mb.showinfo('Курс обмена',
-                            f'Курс: {exchange_rate:.4f} {target} за 1 {base}\n'
-                            f'Курс: {exchange_rate2:.4f} {target} за 1 {base2}')
-            else:
-                mb.showerror('Ошибка',
-                             f'Валюта {target_code} не найдена')
-        except Exception as er:
-            mb.showerror('Ошибка', er)
+        mb.showinfo(
+            f'Курс {name}',
+            f'Стоимость 1 {name} ({base_code})\n'
+            f'= ${price:,.6f}\n'
+        )
 
-    else:
-        mb.showwarning('Внимание', 'Введите код валюты')
+    except Exception as er:
+        mb.showerror('Ошибка', er)
 
 
 currencies = {
-    'EUR': 'Евро',
-    'USD': 'Доллар США',
-    'JPY': 'Японская йена',
-    'GBP': 'Фунт стерлингов',
-    'AUD': 'Австралийский доллар',
-    'CAD': 'Канадский доллар',
-    'CHF': 'Швейцарский франк',
-    'CNY': 'Китайский юань',
-    'RUB': 'Российский рубль ',
-    'KZT': 'Казахстанский тенге',
-    'UZS': 'Узбекский сум'
+    'BTC':        ('Bitcoin',           'bitcoin'),
+    'ETH':        ('Ethereum',          'ethereum'),
+    'USDT':       ('Tether',            'tether'),
+    'BNB':        ('Binance Coin',      'binancecoin'),
+    'XRP':        ('Ripple',            'ripple'),
+    'USDC':       ('USD Coin',          'usd-coin'),
+    'SOL':        ('Solana',            'solana'),
+    'TRX':        ('TRON',              'tron'),
+    'FIGR_HELOC': ('Figure Heloc',      'figure-heloc'),
+    'STETH':      ('Lido Staked Ether', 'staked-ether'),
 }
 
 root = Tk()
