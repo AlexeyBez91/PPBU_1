@@ -4,7 +4,6 @@ from tkinter import ttk
 import requests
 
 
-
 def update_base_label(event):
     code = base_combobox.get()
     name = currencies[code][0]
@@ -13,6 +12,14 @@ def update_base_label(event):
 
 def exchange():
     base_code = base_combobox.get().strip()
+
+    if not base_code:
+        mb.showwarning('Внимание', 'Выберите криптовалюту')
+        return
+
+    if base_code not in currencies:
+        mb.showerror('Ошибка', f'Валюта {base_code} не найдена в списке')
+        return
 
     name, coin_id = currencies[base_code]
 
@@ -58,8 +65,8 @@ window.title('Курс криптовалюты к доллару США')
 w = window.winfo_screenwidth()
 h = window.winfo_screenheight()
 w2 = w // 2 - 185
-h2 = h // 2 - 110
-window.geometry(f'370x220+{w2}+{h2}')
+h2 = h // 2 - 90
+window.geometry(f'370x180+{w2}+{h2}')
 
 window.configure(background='white')
 window.iconbitmap(image)
@@ -75,7 +82,7 @@ base_label.pack(pady=3)
 Button(window, text='Получить курс обмена к доллару',
        command=exchange).pack(pady=5)
 
-label_res = Label(text='', bg='white')
+label_res = Label(text='', background='white')
 label_res.pack()
 
 window.mainloop()
