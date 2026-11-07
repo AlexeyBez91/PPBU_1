@@ -6,8 +6,9 @@ import requests
 
 def update_base_label(event):
     code = base_combobox.get()
-    name = currencies[code][0]
-    base_label.config(text=name)
+    if code in currencies:
+        base_label.config(text=currencies[code][0])
+    label_res.config(text='')
 
 
 def exchange():
@@ -34,12 +35,16 @@ def exchange():
         response.raise_for_status()
         data = response.json()
 
-        info = data[coin_id]
+        info = data.get(coin_id)
+        if info is None:
+            label_res.config(text=f'Монета {name} не найдена в ответе API')
+            return
+
         price = info['usd']
 
-        label_res.config(text=f'Курс {name}\n '
-                              f'Стоимость 1 {name} ({base_code})\n '
-                              f'${price:,.4f}\n')
+        label_res.config(text=f'Курс {name}\n'
+                              f'Стоимость 1 {name} ({base_code})\n'
+                              f'${price:,.4f}')
 
     except Exception as er:
         label_res.config(text=f'Ошибка: {er}')
@@ -69,7 +74,11 @@ h2 = h // 2 - 90
 window.geometry(f'370x180+{w2}+{h2}')
 
 window.configure(background='white')
-window.iconbitmap(image)
+
+try:
+    window.iconbitmap(image)
+except Exception as er:
+    pass
 
 label = Label(text='Запрашиваемая криптовалюта: ', background='white')
 label.pack()
