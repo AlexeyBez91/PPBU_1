@@ -30,14 +30,12 @@ def exchange():
         info = data[coin_id]
         price = info['usd']
 
-        mb.showinfo(
-            f'Курс {name}',
-            f'Стоимость 1 {name} ({base_code})\n'
-            f'= ${price:,.6f}\n'
-        )
+        label_res.config(text=f'Курс {name}\n '
+                              f'Стоимость 1 {name} ({base_code})\n '
+                              f'${price:,.4f}\n')
 
     except Exception as er:
-        mb.showerror('Ошибка', er)
+        label_res.config(text=f'Ошибка: {er}')
 
 
 currencies = {
@@ -56,7 +54,13 @@ currencies = {
 image = 'ico.ico'
 window = Tk()
 window.title('Курс криптовалюты к доллару США')
-window.geometry('500x500')
+
+w = window.winfo_screenwidth()
+h = window.winfo_screenheight()
+w2 = w // 2 - 185
+h2 = h // 2 - 110
+window.geometry(f'370x220+{w2}+{h2}')
+
 window.configure(background='white')
 window.iconbitmap(image)
 
@@ -70,5 +74,8 @@ base_label.pack(pady=3)
 
 Button(window, text='Получить курс обмена к доллару',
        command=exchange).pack(pady=5)
+
+label_res = Label(text='', bg='white')
+label_res.pack()
 
 window.mainloop()
