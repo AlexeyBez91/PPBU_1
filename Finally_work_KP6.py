@@ -53,32 +53,22 @@ currencies = {
     'STETH':      ('Lido Staked Ether', 'staked-ether'),
 }
 
-root = Tk()
-root.title('Курс обмена валют')
-root.geometry('380x300')
+image = 'ico.ico'
+window = Tk()
+window.title('Курс криптовалюты к доллару США')
+window.geometry('500x500')
+window.configure(background='white')
+window.iconbitmap(image)
 
-Label(root, text='Базовая валюта №1').pack(pady=3)
-base_combobox = ttk.Combobox(root, values=list(currencies.keys()))
+label = Label(text='Запрашиваемая криптовалюта: ', background='white')
+label.pack()
+base_combobox = ttk.Combobox(window, values=list(currencies.keys()))
 base_combobox.pack(pady=3)
 base_combobox.bind('<<ComboboxSelected>>', update_base_label)
-base_label = ttk.Label()
+base_label = ttk.Label(background='white')
 base_label.pack(pady=3)
 
-Label(root, text='Базовая валюта №2').pack(pady=3)
-base2_combobox = ttk.Combobox(root, values=list(currencies.keys()))
-base2_combobox.pack(pady=3)
-base2_combobox.bind('<<ComboboxSelected>>', update_base2_label)
-base2_label = ttk.Label()
-base2_label.pack(pady=3)
-
-Label(root, text='Целевая валюта').pack(pady=3)
-target_combobox = ttk.Combobox(root, values=list(currencies.keys()))
-target_combobox.pack(pady=3)
-target_combobox.bind('<<ComboboxSelected>>', update_currency_label)
-target_label = ttk.Label()
-target_label.pack(pady=3)
-
-Button(root, text='Получить курс обмена к доллару',
+Button(window, text='Получить курс обмена к доллару',
        command=exchange).pack(pady=5)
 
-root.mainloop()
+window.mainloop()
